@@ -1,17 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
+import { ThemeProvider, CssBaseline } from '@mui/material';
+import getDesignTokens from './theme';
+import { createTheme } from '@mui/material/styles';
 import { BrowserRouter } from 'react-router-dom';
-
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-
-// Optional: You can customize the theme here
-const theme = createTheme({
-  palette: {
-    mode: 'light', // Change to 'dark' if you want dark mode
-  },
-});
 
 // Inject CSS styles directly
 const style = document.createElement('style');
@@ -35,6 +28,8 @@ style.textContent = `
   }
 `;
 document.head.appendChild(style);
+
+const theme = createTheme(getDesignTokens('light'));
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

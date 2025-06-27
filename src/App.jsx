@@ -12,6 +12,9 @@ import Search from './Search';
 import PlanGuard from './PlanGuard';
 import Conversations from './Conversations';
 import MyChats from './MyChats';
+import Network from './Network';
+import Profile from './Profile';
+import UserProfile from './UserProfile';
 
 const App = () => {
   return (
@@ -42,6 +45,16 @@ const App = () => {
             </PlanGuard>
           } 
         />
+        <Route 
+          path="/network" 
+          element={
+            <PlanGuard>
+              <Network />
+            </PlanGuard>
+          } 
+        />
+        <Route path="/profile" element={<PlanGuard><Profile /></PlanGuard>} />
+        <Route path="/user/:userId" element={<PlanGuard><UserProfile /></PlanGuard>} />
         
         {/* Messaging routes */}
         <Route 

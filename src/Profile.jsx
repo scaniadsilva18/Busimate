@@ -40,6 +40,12 @@ const steps = [
   'Contact Info',
 ];
 
+const genderAvatars = {
+  male: '👨',
+  female: '👩',
+  other: '🧑',
+};
+
 const Profile = () => {
   const [profile, setProfile] = useState(initialProfile);
   const [loading, setLoading] = useState(true);
@@ -91,11 +97,11 @@ const Profile = () => {
           {/* Main Profile Edit/Display */}
           <Grow in timeout={600}>
             <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Card elevation={6} sx={{ p: 4, borderRadius: 5, bgcolor: 'rgba(255,255,255,0.98)', width: '100%', minHeight: 700, display: 'flex', flexDirection: 'column', justifyContent: 'center', boxShadow: '0 8px 32px 0 rgba(20,40,80,0.10)' }}>
+              <Card elevation={8} sx={{ p: 4, borderRadius: 5, bgcolor: 'rgba(255,255,255,0.98)', width: '100%', minHeight: 700, display: 'flex', flexDirection: 'column', justifyContent: 'center', boxShadow: '0 12px 48px 0 rgba(20,40,80,0.13)', backdropFilter: 'blur(4px)' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 3, justifyContent: 'space-between' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                    <Avatar src={profile.photoURL || ''} sx={{ width: 80, height: 80, fontSize: 36, bgcolor: '#e3e8ee', color: '#142850', fontFamily: 'Poppins, Segoe UI, Arial, sans-serif' }}>
-                      {(profile.displayName && profile.displayName[0]) || '?'}
+                    <Avatar sx={{ width: 100, height: 100, fontSize: 48, bgcolor: '#e3e8ee', color: '#142850', fontFamily: 'Poppins, Segoe UI, Arial, sans-serif', boxShadow: '0 4px 24px 0 rgba(20,40,80,0.10)' }}>
+                      {profile.gender ? genderAvatars[profile.gender] : (profile.displayName && profile.displayName[0]) || '?'}
                     </Avatar>
                     <Box>
                       <Typography variant="h4" sx={{ fontWeight: 900, color: '#142850', fontFamily: 'Poppins, Segoe UI, Arial, sans-serif', letterSpacing: 1 }}>{profile.displayName || 'Your Name'}</Typography>

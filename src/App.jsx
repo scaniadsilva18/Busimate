@@ -15,6 +15,7 @@ import MyChats from './MyChats';
 import Network from './Network';
 import Profile from './Profile';
 import UserProfile from './UserProfile';
+import Settings from './Settings';
 
 const App = () => {
   return (
@@ -55,6 +56,7 @@ const App = () => {
         />
         <Route path="/profile" element={<PlanGuard><Profile /></PlanGuard>} />
         <Route path="/user/:userId" element={<PlanGuard><UserProfile /></PlanGuard>} />
+        <Route path="/settings" element={<PlanGuard><Settings /></PlanGuard>} />
         
         {/* Messaging routes */}
         <Route 

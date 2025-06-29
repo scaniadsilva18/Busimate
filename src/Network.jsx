@@ -46,6 +46,7 @@ const Network = () => {
       setConnections(data.connections || []);
       setPending(data.pendingConnections || []);
       setReceived(data.receivedRequests || []);
+      setCurrentUserProfile(prev => prev ? { ...prev, following: data.following || [] } : prev);
     };
     fetchConnections();
   }, [currentUser]);
@@ -64,13 +65,16 @@ const Network = () => {
 
   const handleAccept = async (requesterId) => {
     if (!currentUser) return;
+    // Accept connection
     await updateDoc(doc(db, 'users', currentUser.uid), {
       receivedRequests: arrayRemove(requesterId),
-      connections: arrayUnion(requesterId)
+      connections: arrayUnion(requesterId),
+      following: arrayUnion(requesterId) // Add to following
     });
     await updateDoc(doc(db, 'users', requesterId), {
       pendingConnections: arrayRemove(currentUser.uid),
-      connections: arrayUnion(currentUser.uid)
+      connections: arrayUnion(currentUser.uid),
+      following: arrayUnion(currentUser.uid) // Add to following
     });
     setReceived(prev => prev.filter(id => id !== requesterId));
     setConnections(prev => [...prev, requesterId]);
@@ -80,16 +84,22 @@ const Network = () => {
   // Get connection user objects
   const connectionUsers = users.filter(u => connections.includes(u.id));
 
+  const genderAvatars = {
+    male: '👨',
+    female: '👩',
+    other: '🧑',
+  };
+
   return (
     <>
       <Navbar />
       <Box sx={{ maxWidth: '100vw', mx: 'auto', mt: 4, px: { xs: 1, md: 4 }, display: 'flex', gap: 4 }}>
         {/* Sidebar */}
-        <Paper elevation={3} sx={{ minWidth: 270, maxWidth: 320, p: 3, borderRadius: 4, bgcolor: '#f8fafc', display: { xs: 'none', md: 'block' }, height: 'fit-content', alignSelf: 'flex-start' }}>
+        <Paper elevation={6} sx={{ minWidth: 270, maxWidth: 320, p: 3, borderRadius: 5, bgcolor: 'rgba(255,255,255,0.95)', display: { xs: 'none', md: 'block' }, height: 'fit-content', alignSelf: 'flex-start', boxShadow: '0 8px 32px 0 rgba(20,40,80,0.10)', backdropFilter: 'blur(4px)' }}>
           {currentUserProfile && (
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
-              <Avatar src={currentUserProfile.photoURL || ''} sx={{ width: 70, height: 70, mb: 1 }}>
-                {(currentUserProfile.displayName && currentUserProfile.displayName[0]) || (currentUserProfile.email && currentUserProfile.email[0]) || '?'}
+              <Avatar sx={{ width: 80, height: 80, fontSize: 36, mb: 1, bgcolor: '#e3e8ee', color: '#142850', boxShadow: '0 2px 8px 0 rgba(20,40,80,0.08)' }}>
+                {currentUserProfile.gender ? genderAvatars[currentUserProfile.gender] : (currentUserProfile.displayName && currentUserProfile.displayName[0]) || (currentUserProfile.email && currentUserProfile.email[0]) || '?'}
               </Avatar>
               <Typography variant="h6" sx={{ fontWeight: 700, color: '#142850' }}>{currentUserProfile.displayName || currentUserProfile.email}</Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>{currentUserProfile.headline || currentUserProfile.role || 'Entrepreneur'}</Typography>
@@ -100,7 +110,7 @@ const Network = () => {
                   <Typography variant="caption" color="text.secondary">Connections</Typography>
                 </Box>
                 <Box sx={{ textAlign: 'center' }}>
-                  <Typography variant="h6" sx={{ color: '#1e3a8a', fontWeight: 700 }}>{(currentUserProfile.pendingConnections && currentUserProfile.pendingConnections.length) || 0}</Typography>
+                  <Typography variant="h6" sx={{ color: '#1e3a8a', fontWeight: 700 }}>{(currentUserProfile.following && currentUserProfile.following.length) || 0}</Typography>
                   <Typography variant="caption" color="text.secondary">Following</Typography>
                 </Box>
               </Box>

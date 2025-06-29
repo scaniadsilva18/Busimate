@@ -37,23 +37,29 @@ const UserProfile = () => {
   if (loading) return <Box sx={{ p: 6, textAlign: 'center' }}><CircularProgress size={60} /></Box>;
   if (!user) return <Box sx={{ p: 6, textAlign: 'center' }}>User not found.</Box>;
 
+  const genderAvatars = {
+    male: '👨',
+    female: '👩',
+    other: '🧑',
+  };
+
   return (
     <>
       <Navbar />
       <Box sx={{ width: '100vw', minHeight: '100vh', bgcolor: 'linear-gradient(135deg, #f8fafc 60%, #e3e8ee 100%)', pb: 6, display: 'flex', flexDirection: 'column', alignItems: 'center', fontFamily: 'Poppins, Segoe UI, Arial, sans-serif' }}>
-        <Box sx={{ width: '100%', maxWidth: 800, mx: 'auto', mt: 4, display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <Stack spacing={4} sx={{ width: '100%', maxWidth: 800, mx: 'auto', mt: 4 }}>
           {/* Profile Header Card */}
-          <Card elevation={8} sx={{ borderRadius: 5, bgcolor: 'rgba(255,255,255,0.98)', p: 4, boxShadow: '0 8px 32px 0 rgba(20,40,80,0.10)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <Avatar src={user.photoURL || ''} sx={{ width: 110, height: 110, fontSize: 48, bgcolor: '#e3e8ee', color: '#142850', fontFamily: 'Poppins, Segoe UI, Arial, sans-serif', mb: 2 }}>
-              {(user.displayName && user.displayName[0]) || '?'}
+          <Card elevation={12} sx={{ borderRadius: 6, bgcolor: 'rgba(255,255,255,0.95)', p: 5, boxShadow: '0 12px 48px 0 rgba(20,40,80,0.13)', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', overflow: 'visible', backdropFilter: 'blur(4px)' }}>
+            <Avatar sx={{ width: 120, height: 120, fontSize: 60, bgcolor: '#e3e8ee', color: '#142850', fontFamily: 'Poppins, Segoe UI, Arial, sans-serif', mb: 2, boxShadow: '0 4px 24px 0 rgba(20,40,80,0.10)' }}>
+              {user.gender ? genderAvatars[user.gender] : (user.displayName && user.displayName[0]) || '?'}
             </Avatar>
-            <Typography variant="h4" sx={{ fontWeight: 900, color: '#142850', fontFamily: 'Poppins, Segoe UI, Arial, sans-serif', letterSpacing: 1 }}>{user.displayName || 'User'}</Typography>
+            <Typography variant="h4" sx={{ fontWeight: 900, color: '#142850', fontFamily: 'Poppins, Segoe UI, Arial, sans-serif', letterSpacing: 1, mb: 1 }}>{user.displayName || 'User'}</Typography>
             <Typography variant="h6" sx={{ color: '#1e3a8a', fontWeight: 600, fontFamily: 'Poppins, Segoe UI, Arial, sans-serif', mb: 1 }}>{user.headline || 'Headline / Role'}</Typography>
             <Typography variant="body1" color="text.secondary" sx={{ fontFamily: 'Poppins, Segoe UI, Arial, sans-serif', mb: 1 }}>{user.location || 'Location'}</Typography>
             <Typography variant="body2" sx={{ color: '#64748b', fontFamily: 'Poppins, Segoe UI, Arial, sans-serif', mb: 1 }}>{user.bio || 'No bio provided.'}</Typography>
             <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', mb: 1 }}>
               {(user.skills && typeof user.skills === 'string' ? user.skills.split(',') : user.skills || []).map((skill, idx) => (
-                <Chip key={idx} label={skill.trim()} size="small" sx={{ bgcolor: '#142850', color: '#fff', fontWeight: 500, fontFamily: 'Poppins, Segoe UI, Arial, sans-serif' }} />
+                <Chip key={idx} label={skill.trim()} size="small" sx={{ bgcolor: '#142850', color: '#fff', fontWeight: 500, fontFamily: 'Poppins, Segoe UI, Arial, sans-serif', boxShadow: '0 1px 4px 0 rgba(20,40,80,0.08)' }} />
               ))}
             </Stack>
           </Card>
@@ -194,7 +200,7 @@ const UserProfile = () => {
               </Stack>
             )}
           </Card>
-        </Box>
+        </Stack>
       </Box>
     </>
   );

@@ -1,18 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import { AppBar, Toolbar, Typography, Button, Box, CircularProgress, Avatar, IconButton, Menu, MenuItem } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
-import { auth } from './firebase';
+import { auth, db } from './firebase';
+import { doc, getDoc } from 'firebase/firestore';
+
+const genderAvatars = {
+  male: '👨',
+  female: '👩',
+  other: '🧑',
+};
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [gender, setGender] = useState('other');
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((authUser) => {
+    const unsubscribe = auth.onAuthStateChanged(async (authUser) => {
       setUser(authUser);
       setLoading(false);
+      if (authUser) {
+        const userDoc = await getDoc(doc(db, 'users', authUser.uid));
+        if (userDoc.exists() && userDoc.data().gender) {
+          setGender(userDoc.data().gender);
+        }
+      }
     });
     return () => unsubscribe();
   }, []);
@@ -35,24 +49,29 @@ const Navbar = () => {
     <AppBar
       position="sticky"
       sx={{
-        background: 'linear-gradient(90deg, #142850 60%, #FFC107 200%)',
-        boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+        background: 'rgba(20,40,80,0.85)',
+        backdropFilter: 'blur(8px)',
+        boxShadow: '0 8px 32px 0 rgba(20,40,80,0.18)',
+        borderBottom: '1.5px solid #e3e8ee',
         zIndex: 1300,
+        transition: 'background 0.3s',
       }}
     >
-      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', minHeight: 80 }}>
         {/* Brand / Logo */}
-        <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => navigate('/') }>
-          <img src="/logo192.png" alt="Logo" style={{ height: 40, marginRight: 12 }} />
+        <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer', gap: 1 }} onClick={() => navigate('/') }>
           <Typography
             variant="h5"
             sx={{
               fontWeight: 900,
-              fontSize: '2rem',
+              fontSize: { xs: '1.5rem', md: '2.2rem' },
               textDecoration: 'none',
               color: '#fff',
-              fontFamily: "'Segoe UI', sans-serif",
-              letterSpacing: '1px',
+              fontFamily: "'Segoe UI', 'Poppins', sans-serif",
+              letterSpacing: '1.5px',
+              textShadow: '0 2px 8px rgba(20,40,80,0.10)',
+              transition: 'color 0.2s',
+              '&:hover': { color: '#FFD600' },
             }}
           >
             Busimate
@@ -63,13 +82,16 @@ const Navbar = () => {
           <Button
             variant="contained"
             sx={{
-              background: '#FFC107',
+              background: 'linear-gradient(90deg, #FFD600 60%, #FFC107 100%)',
               color: '#142850',
               fontWeight: 700,
-              borderRadius: 2,
+              borderRadius: 3,
               px: 3,
-              boxShadow: 2,
-              '&:hover': { background: '#FFD600' },
+              boxShadow: '0 2px 8px 0 rgba(255,214,0,0.10)',
+              fontSize: '1.1rem',
+              letterSpacing: '0.5px',
+              '&:hover': { background: 'linear-gradient(90deg, #FFC107 60%, #FFD600 100%)' },
+              transition: 'background 0.2s',
             }}
             onClick={() => navigate('/post')}
           >
@@ -81,9 +103,13 @@ const Navbar = () => {
               borderColor: '#fff',
               color: '#fff',
               fontWeight: 700,
-              borderRadius: 2,
+              borderRadius: 3,
               px: 3,
-              '&:hover': { borderColor: '#FFC107', color: '#FFC107' },
+              fontSize: '1.1rem',
+              letterSpacing: '0.5px',
+              boxShadow: '0 2px 8px 0 rgba(20,40,80,0.05)',
+              '&:hover': { borderColor: '#FFD600', color: '#FFD600', background: 'rgba(255,255,255,0.04)' },
+              transition: 'all 0.2s',
             }}
             onClick={() => navigate('/network')}
           >
@@ -112,7 +138,7 @@ const Navbar = () => {
             )}
             {/* Profile Avatar Dropdown */}
             <IconButton onClick={handleProfileClick} sx={{ ml: 1 }}>
-              <Avatar src={user.photoURL || ''} alt={user.displayName || user.email} />
+              <Avatar sx={{ fontSize: 28 }}>{genderAvatars[gender]}</Avatar>
             </IconButton>
             <Menu
               anchorEl={anchorEl}
